@@ -10,4 +10,7 @@
 
 @interface LostTableViewCell : UITableViewCell
 
+@property (weak, nonatomic) IBOutlet UILabel *labelHairColor;
+
+
 @end

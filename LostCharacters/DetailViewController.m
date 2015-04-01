@@ -10,7 +10,7 @@
 #import "AppDelegate.h"
 #import "Lost.h"
 
-@interface DetailViewController ()
+@interface DetailViewController () <UIImagePickerControllerDelegate>
 @end
 
 @implementation DetailViewController
@@ -23,6 +23,7 @@
     {
         self.actor.text = [self.selectedLost valueForKey:@"actor"];
         self.passenger.text = [self.selectedLost valueForKey:@"passenger"];
+        self.haircolor.text = [self.selectedLost valueForKey:@"haircolor"];
     }
 }
 
@@ -52,5 +53,39 @@
     }
 
 }
+
+
+#pragma mark - picking photo
+
+//segue: present modally to photo view controller
+- (IBAction)buttonSelectPhoto:(id)sender {
+    UIImagePickerController *picker = [[UIImagePickerController alloc] init];
+    picker.delegate = self;
+    picker.allowsEditing = YES;
+    picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+
+    [self presentViewController:picker animated:YES completion:NULL];
+
+
+    
+}
+
+- (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
+
+    UIImage *chosenImage = info[UIImagePickerControllerEditedImage];
+    self.imageview.image = chosenImage;
+
+    [picker dismissViewControllerAnimated:YES completion:NULL];
+
+}
+- (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
+
+    [picker dismissViewControllerAnimated:YES completion:NULL];
+
+}
+
+
+
+
 
 @end

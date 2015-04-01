@@ -8,6 +8,7 @@
 
 #import "ViewController.h"
 #import "DetailViewController.h"
+#import "LostTableViewCell.h"
 #import "AppDelegate.h"
 #import "Lost.h"
 
@@ -113,10 +114,14 @@
 #pragma mark - UITableViewDataSource, UITableViewDelegate
 -(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell"];
+    LostTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell"];
     NSManagedObject *lost = [self.lostArray objectAtIndex:indexPath.row];
     cell.textLabel.text = [lost valueForKey:@"actor"];
     cell.detailTextLabel.text = [lost valueForKey:@"passenger"];
+
+    //custom
+    cell.labelHairColor.text = [lost valueForKey:@"haircolor"];
+    //....add more here
 
     return cell;
 }

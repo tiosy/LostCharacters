@@ -440,6 +440,7 @@
 				6E3039CA1ACB501D002CF5C8 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		6E3039CB1ACB501D002CF5C8 /* Build configuration list for PBXNativeTarget "LostCharactersTests" */ = {
 			isa = XCConfigurationList;
@@ -448,6 +449,7 @@
 				6E3039CD1ACB501D002CF5C8 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 
