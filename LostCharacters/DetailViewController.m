@@ -7,31 +7,49 @@
 //
 
 #import "DetailViewController.h"
+#import "AppDelegate.h"
+#import "Lost.h"
 
 @interface DetailViewController ()
-
 @end
 
 @implementation DetailViewController
 
+
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view.
+
+    if(self.selectedLost != nil)
+    {
+        self.actor.text = [self.selectedLost valueForKey:@"actor"];
+    }
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
+- (IBAction)buttonSave:(id)sender {
+NSLog(@"in detail Save");
+    if(self.selectedLost == nil){ //ADD
+        NSManagedObject *newLost = [NSEntityDescription insertNewObjectForEntityForName:@"Lost" inManagedObjectContext:self.managedObjectContext];
+        [newLost setValue:self.actor.text forKey:@"actor"];
+        [newLost setValue:self.passenger.text forKey:@"passenger"];
+        [newLost setValue:self.haircolor.text forKey:@"haircolor"];
+        [newLost setValue:self.gender.text forKey:@"gender"];
+        [newLost setValue:[NSNumber numberWithInteger: [self.age.text integerValue]] forKey:@"age"];
 
-/*
-#pragma mark - Navigation
+    }
+    else{ //Update
+        [self.selectedLost setValue:self.actor.text forKey:@"actor"];
+        [self.selectedLost setValue:self.passenger.text forKey:@"passenger"];
+        [self.selectedLost setValue:self.haircolor.text forKey:@"haircolor"];
+        [self.selectedLost setValue:self.gender.text forKey:@"gender"];
+        [self.selectedLost setValue:[NSNumber numberWithInteger: [self.age.text integerValue]] forKey:@"age"];
+   }
+    //now saving to core data
+    NSError *error = nil;
+    if (![self.managedObjectContext save:&error]) {
+        NSLog(@"Unable to save managed object context.");
+        NSLog(@"%@, %@", error, error.localizedDescription);
+    }
 
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
 }
-*/
 
 @end

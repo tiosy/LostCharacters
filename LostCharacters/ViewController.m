@@ -15,10 +15,11 @@
 
 //App's ManagedObjectContext
 @property NSManagedObjectContext *managedObjectContext;
-@property (nonatomic) NSMutableArray *lostArray;
+
+@property (nonatomic) NSMutableArray *lostArray; //each element is a Lost object (aka NSManagedObject)
 @property (weak, nonatomic) IBOutlet UITableView *tableview;
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *editButton;
-@property (nonatomic)  NSIndexPath *deleteIndexPath;
+@property (nonatomic)  NSIndexPath *selectedIndexPath;
 
 
 @property (weak, nonatomic) IBOutlet UISegmentedControl *segmented;
@@ -56,46 +57,31 @@
     [self.tableview reloadData];
 }
 
-
-
-
-
-//- (IBAction)textfieldSaveLost:(UITextField *)sender {
-//    [sender resignFirstResponder];
-//    NSManagedObject *newLost = [NSEntityDescription insertNewObjectForEntityForName:@"Lost" inManagedObjectContext: self.managedObjectContext];
-//    [newLost setValue:sender.text forKey:@"actor"];
-//    NSNumber *randInt = [NSNumber numberWithLong:arc4random()%10];
-//    [newLost setValue:randInt forKey:@"passenger"];
-//
-//    [self.managedObjectContext save:nil];
-//    //[self loadWithPredicateFormat:nil];
-//}
-
-
-
-
-//Example
-// PASS textField to next ViewController
-// Here we changed sender from (id) to the object (UIButton)
+//Segue
 - (void) prepareForSegue:(UIStoryboardSegue *)segue sender:(UIButton *)sender
 {
 
-       // Make sure your segue name in storyboard is the same as this line
+        // Get reference to the destination view controller
+        DetailViewController *detailVC = [segue destinationViewController];
+
+        detailVC.managedObjectContext = self.managedObjectContext;
+
+        // Make sure your segue name in storyboard is the same as this line
         if ([[segue identifier] isEqualToString:@"AddDetail"])
         {
-            // Get reference to the destination view controller
-            DetailViewController *detailVC = [segue destinationViewController];
-    
-            // Pass any objects to the view controller here, like...
-           // [vc setMyObjectHere:object];
+            NSLog(@"ADD detail....segue");
+
+            detailVC.selectedLost = nil;
+
         } else if ([[segue identifier] isEqualToString:@"ShowDetail"])
         {
+            NSLog(@"SHOW detail....segue");
+
+            detailVC.selectedLost = (NSManagedObject *) [self.lostArray objectAtIndex:self.selectedIndexPath.row];
+            
+
 
         }
-
-
-
-
 
 }
 
@@ -122,6 +108,8 @@
 //
 //
 
+
+
 #pragma mark - UITableViewDataSource, UITableViewDelegate
 -(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
@@ -139,7 +127,11 @@
 }
 
 #pragma mark UITableViewDelegate protocols
+
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+
+    NSLog(@"I am selected...%ld", indexPath.row);
+    self.selectedIndexPath = indexPath;
 
     UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
     cell.backgroundColor = [UIColor greenColor];
@@ -149,7 +141,7 @@
     if([self.editButton.title isEqualToString:@"Done"])
     {
 
-        self.deleteIndexPath = indexPath;
+
 
         UIAlertView *alertview = [[UIAlertView alloc]
                                   initWithTitle:@"Delete Confirmation"
@@ -164,10 +156,12 @@
 
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
 {
+
+    self.selectedIndexPath = indexPath;
+
     if (editingStyle == UITableViewCellEditingStyleDelete)
     {
-        self.deleteIndexPath = indexPath;
-        //code for UIAlrtView
+                //code for UIAlrtView
         UIAlertView *alertview = [[UIAlertView alloc]
                                   initWithTitle:@"Delete Confirmation"
                                   message:@"" //or use custom error msg: @"This is a Message"
@@ -207,9 +201,30 @@
     //Example using button index
     if(buttonIndex == 0) // DELETE
     {
-        [self.lostArray removeObjectAtIndex:self.deleteIndexPath.row];
-        [self.tableview deleteRowsAtIndexPaths:[NSArray arrayWithObject:self.deleteIndexPath] withRowAnimation:UITableViewRowAnimationFade];
-        [self.tableview reloadData];
+        //////////////////////////////////////////////////////////////////////////////
+        //
+        //step1: need to delete core data row
+        //
+        NSManagedObject *lost = (NSManagedObject *) [self.lostArray objectAtIndex:self.selectedIndexPath.row];
+        [self.managedObjectContext deleteObject:lost];
+        //save to commit delete
+        NSError *error = nil;
+        if (![self.managedObjectContext save:&error]) {
+            NSLog(@"Unable to save managed object context.");
+            NSLog(@"%@, %@", error, error.localizedDescription);
+        }
+        //////////////////////////////////////////////////////////////////////////////
+        //
+        //delete row in tableview array
+        //
+        [self.lostArray removeObjectAtIndex:self.selectedIndexPath.row];
+        [self.tableview deleteRowsAtIndexPaths:[NSArray arrayWithObject:self.selectedIndexPath] withRowAnimation:UITableViewRowAnimationFade];
+        NSLog(@"-----%ld",self.selectedIndexPath.row);
+
+
+
+        //[self.tableview reloadData];
+
 
     }
     if(buttonIndex == 1) // Cancel button
@@ -232,6 +247,42 @@
 }
 
 
+#pragma mark -unwind to Root to update tableview
+-(IBAction)unwindFormDetailVC:(UIStoryboardSegue *)sender
+{
+    NSLog(@"in unwind ");
+
+    DetailViewController *detailVC = sender.sourceViewController;
+
+    if(detailVC.selectedLost == nil){ //ADD
+        NSManagedObject *newLost = [NSEntityDescription insertNewObjectForEntityForName:@"Lost" inManagedObjectContext:detailVC.managedObjectContext];
+        [newLost setValue:detailVC.actor.text forKey:@"actor"];
+        [newLost setValue:detailVC.passenger.text forKey:@"passenger"];
+        [newLost setValue:detailVC.haircolor.text forKey:@"haircolor"];
+        [newLost setValue:detailVC.gender.text forKey:@"gender"];
+        [newLost setValue:[NSNumber numberWithInteger: [detailVC.age.text integerValue]] forKey:@"age"];
+
+    }
+    else{ //Update
+        [detailVC.selectedLost setValue:detailVC.actor.text forKey:@"actor"];
+        [detailVC.selectedLost setValue:detailVC.passenger.text forKey:@"passenger"];
+        [detailVC.selectedLost setValue:detailVC.haircolor.text forKey:@"haircolor"];
+        [detailVC.selectedLost setValue:detailVC.gender.text forKey:@"gender"];
+        [detailVC.selectedLost setValue:[NSNumber numberWithInteger: [detailVC.age.text integerValue]] forKey:@"age"];
+    }
+    //now saving to core data
+    NSError *error = nil;
+    if (![detailVC.managedObjectContext save:&error]) {
+        NSLog(@"Unable to save managed object context.");
+        NSLog(@"%@, %@", error, error.localizedDescription);
+    }
+
+
+    //expensive reload....
+    [Lost retrieveLostWithCompletion:self.managedObjectContext plistPrefix:@"lost" :^(NSArray *array) {
+        self.lostArray =[array mutableCopy];
+    }];
+}
 
 
 

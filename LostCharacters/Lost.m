@@ -21,8 +21,8 @@
         self.actor =        [dictionary objectForKey:@"actor"];
         self.passenger =    [dictionary objectForKey:@"passenger"];
         self.hairColor =    [dictionary objectForKey:@"haircolor"];
-        self.gender =    [dictionary objectForKey:@"gender"];
-        self.age =    [dictionary objectForKey:@"age"];
+        self.gender =       [dictionary objectForKey:@"gender"];
+        self.age =          [dictionary objectForKey:@"age"];
     }
     
     return self;
@@ -43,6 +43,7 @@
 
     NSArray *resultArray = [NSArray new];
     resultArray = [managedObjectContext executeFetchRequest:fetchRequest error:&error];
+    NSLog(@"CORE DATA: size %ld", resultArray.count);
 
     if(error){
         NSLog(@"%@, %@", error, error.localizedDescription);
@@ -54,20 +55,31 @@
     if(resultArray == nil || resultArray.count ==0)
     {
 
-        NSMutableArray  *myLostArray = [NSMutableArray new];
-
         // Path to the plist (in the application bundle)
         NSString *path = [[NSBundle mainBundle] pathForResource:plistPrefix ofType:@"plist"];
-
-        // Build the array from the plist
         NSMutableArray *plistArray = [[NSMutableArray alloc] initWithContentsOfFile:path];
 
+        // save plist to CORE DATA
         for (NSDictionary *dic in plistArray) {
 
-            [myLostArray addObject:[[Lost alloc] initWithDictionary:dic]];
-        
+            //[myLostArray addObject:[[Lost alloc] initWithDictionary:dic]];
+
+            //save PLIST to CORE DATA
+            NSManagedObject *newLost = [NSEntityDescription insertNewObjectForEntityForName:@"Lost" inManagedObjectContext:managedObjectContext];
+            [newLost setValue:[dic objectForKey:@"actor"] forKey:@"actor"];
+            [newLost setValue:[dic objectForKey:@"passenger"] forKey:@"passenger"];
+
+            NSError *error = nil;
+            if (![managedObjectContext save:&error]) {
+                NSLog(@"Unable to save managed object context.");
+                NSLog(@"%@, %@", error, error.localizedDescription);
+            }
         }
-        complete(myLostArray);
+        //Now fetch again after saving plist into CORE DATA
+        resultArray = [managedObjectContext executeFetchRequest:fetchRequest error:&error];
+        NSLog(@"after saving plist....CORE DATA: size %ld", resultArray.count);
+
+        complete(resultArray);
     }
 }
 

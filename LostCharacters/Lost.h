@@ -15,7 +15,7 @@
 @property NSString *passenger;
 @property NSString *hairColor;
 @property NSString *gender;
-@property NSNumber *age;
+@property NSNumber  *age;
 
 
 

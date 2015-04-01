@@ -7,10 +7,22 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "Lost.h"
 
 @interface DetailViewController : UIViewController
 
 
 @property NSManagedObjectContext *managedObjectContext;
+@property NSManagedObject *selectedLost;
+
+@property (weak, nonatomic) IBOutlet UITextField *actor;
+@property (weak, nonatomic) IBOutlet UITextField *passenger;
+@property (weak, nonatomic) IBOutlet UITextField *haircolor;
+@property (weak, nonatomic) IBOutlet UITextField *gender;
+@property (weak, nonatomic) IBOutlet UITextField *age;
+@property (weak, nonatomic) IBOutlet UIImageView *imageview;
+
+
+
 
 @end
