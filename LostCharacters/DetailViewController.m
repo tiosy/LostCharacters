@@ -22,11 +22,12 @@
     if(self.selectedLost != nil)
     {
         self.actor.text = [self.selectedLost valueForKey:@"actor"];
+        self.passenger.text = [self.selectedLost valueForKey:@"passenger"];
     }
 }
 
 - (IBAction)buttonSave:(id)sender {
-NSLog(@"in detail Save");
+    NSLog(@"in detail Save");
     if(self.selectedLost == nil){ //ADD
         NSManagedObject *newLost = [NSEntityDescription insertNewObjectForEntityForName:@"Lost" inManagedObjectContext:self.managedObjectContext];
         [newLost setValue:self.actor.text forKey:@"actor"];
