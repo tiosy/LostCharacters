@@ -122,6 +122,11 @@
     //custom
     cell.labelHairColor.text = [lost valueForKey:@"haircolor"];
     //....add more here
+    //photo in core data is NSDATA
+    NSData *imageNSData = [lost valueForKey:@"photo"];
+    cell.imageView.image = [UIImage imageWithData:imageNSData];
+
+
 
     return cell;
 }
@@ -138,8 +143,8 @@
     NSLog(@"I am selected...%ld", indexPath.row);
     self.selectedIndexPath = indexPath;
 
-    UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
-    cell.backgroundColor = [UIColor greenColor];
+    //UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
+    //cell.backgroundColor = [UIColor greenColor];
 
     // if edit button title is "Done"
     // delete the tapped ROW
@@ -267,6 +272,9 @@
         [newLost setValue:detailVC.gender.text forKey:@"gender"];
         [newLost setValue:[NSNumber numberWithInteger: [detailVC.age.text integerValue]] forKey:@"age"];
 
+        NSData *imageNSData = UIImagePNGRepresentation(detailVC.imageview.image);
+        [newLost setValue:imageNSData forKey:@"photo"];
+
     }
     else{ //Update
         [detailVC.selectedLost setValue:detailVC.actor.text forKey:@"actor"];
@@ -274,6 +282,10 @@
         [detailVC.selectedLost setValue:detailVC.haircolor.text forKey:@"haircolor"];
         [detailVC.selectedLost setValue:detailVC.gender.text forKey:@"gender"];
         [detailVC.selectedLost setValue:[NSNumber numberWithInteger: [detailVC.age.text integerValue]] forKey:@"age"];
+
+        NSData *imageNSData = UIImagePNGRepresentation(detailVC.imageview.image);
+        [detailVC.selectedLost setValue:imageNSData forKey:@"photo"];
+
     }
     //now saving to core data
     NSError *error = nil;

@@ -16,6 +16,7 @@
 @property NSString *hairColor;
 @property NSString *gender;
 @property NSNumber  *age;
+@property NSData   *photo;
 
 
 

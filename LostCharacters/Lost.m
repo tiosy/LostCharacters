@@ -23,6 +23,8 @@
         self.hairColor =    [dictionary objectForKey:@"haircolor"];
         self.gender =       [dictionary objectForKey:@"gender"];
         self.age =          [dictionary objectForKey:@"age"];
+        self.photo =          [dictionary objectForKey:@"photo"];
+
     }
     
     return self;
