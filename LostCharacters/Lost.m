@@ -20,7 +20,11 @@
     {
         self.actor =        [dictionary objectForKey:@"actor"];
         self.passenger =    [dictionary objectForKey:@"passenger"];
+        self.hairColor =    [dictionary objectForKey:@"haircolor"];
+        self.gender =    [dictionary objectForKey:@"gender"];
+        self.age =    [dictionary objectForKey:@"age"];
     }
+    
     return self;
 }
 

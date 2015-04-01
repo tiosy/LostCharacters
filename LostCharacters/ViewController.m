@@ -7,6 +7,7 @@
 //
 
 #import "ViewController.h"
+#import "DetailViewController.h"
 #import "AppDelegate.h"
 #import "Lost.h"
 
@@ -71,11 +72,41 @@
 //}
 
 
+
+
+//Example
+// PASS textField to next ViewController
+// Here we changed sender from (id) to the object (UIButton)
+- (void) prepareForSegue:(UIStoryboardSegue *)segue sender:(UIButton *)sender
+{
+
+       // Make sure your segue name in storyboard is the same as this line
+        if ([[segue identifier] isEqualToString:@"AddDetail"])
+        {
+            // Get reference to the destination view controller
+            DetailViewController *detailVC = [segue destinationViewController];
+    
+            // Pass any objects to the view controller here, like...
+           // [vc setMyObjectHere:object];
+        } else if ([[segue identifier] isEqualToString:@"ShowDetail"])
+        {
+
+        }
+
+
+
+
+
+}
+
+
+
 - (IBAction)segmentAction:(UISegmentedControl *)sender {
 
     if (sender.selectedSegmentIndex == 0)
     {
-           }
+
+    }
     else
     {
 
@@ -84,6 +115,12 @@
 
 }
 
+
+//
+//
+// UITableview delegate methods
+//
+//
 
 #pragma mark - UITableViewDataSource, UITableViewDelegate
 -(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -160,7 +197,11 @@
     //[tableView reloadData];
 }
 
+-(NSString *)tableView:(UITableView *)tableView titleForDeleteConfirmationButtonForRowAtIndexPath:(NSIndexPath *)indexPath {
+    return @"Please don't delete me!";
+}
 
+#pragma mark alertview for tableview's delete confirmation
 -(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
 {
     //Example using button index
@@ -178,6 +219,7 @@
 
 }
 
+#pragma mark toggle Edit/Done button for tableview's delete function
 // toggle Edit/Done button
 - (IBAction)editItem:(UIBarButtonItem *)sender {
     if([sender.title isEqualToString:@"Edit"]){
